@@ -1,0 +1,113 @@
+setTimeout(async () => {
+            console.log('DANS LE SETTIMEOUT')  
+            await polling(id)
+              .then(r => {
+                let { success, finish, progression } = r
+                finish = percentage > 89 ? true : finish // f
+                if(finish){
+                  console.log("finished")
+                  // send  a request to get the data and remove the task from the db
+                  setResponse({
+                    success: true,
+                    idTask: id,
+                    message: 'finished 2'
+                  })
+                  percentage = 100
+                }else if(success){
+                  console.log("success")
+                  percentage = progression ? parseInt(progression, 10) : (percentage + 10) //F
+                }else{
+                  // send a request to remove the task
+                  console.log("erreur 1")
+                  setResponse({
+                    success: false,
+                    idTask: id,
+                    message: 'erreur'
+                  })
+                  percentage = 100
+                }
+              })
+              .catch(e => {
+                // send a request to remove the task
+                console.log("erreur 2")
+                setResponse({
+                  success: false,
+                  idTask: id,
+                  message: 'erreur'
+                })
+                percentage = 100
+              })
+
+
+              console.log('AFTER POLLING')
+
+          }, 250);
+
+
+
+
+def convert_pdf_to_txt2(file):
+    from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+    from pdfminer.converter import TextConverter
+    from pdfminer.layout import LAParams
+    from pdfminer.pdfpage import PDFPage
+    from io import BytesIO, StringIO
+    rsrcmgr = PDFResourceManager()
+    retstr = StringIO
+    laparams = LAParams()
+    device = TextConverter(rsrcmgr, retstr, laparams=laparams)
+    interpreter = PDFPageInterpreter(rsrcmgr, device)
+    number = 0
+    for page in PDFPage.get_pages(file):
+        number = number + 1
+        interpreter.process_page(page)
+
+    text = retstr.getvalue()
+    print(text)
+    device.close()
+    retstr.close()
+    return text
+
+    stopwords = json.loads(open('./stopwords.json', mode = 'r', encoding='utf-8').read())
+
+
+
+    @app.post("/wait")
+async def read_root(
+  file: Optional[UploadFile] = File(None), 
+  stopWords: Optional[bool] = Form(True),
+  text: Optional[str] = Form(None)
+):
+
+  result_words = None
+  print('1')
+  # if we have to read a file
+  if file:
+    type_of_file = file.content_type
+    content = await file.read()
+    print('2')
+    if type_of_file == 'application/pdf':
+      text_pdf = convert_pdf_to_text(content, 'jkjjkjkj', True)
+      print('3')
+      result_words = process_text(text_pdf, 'jkjjkjkj', stopWords, True)
+      print('4')
+    elif type_of_file == 'text/plain':
+      # Decode bytes ==> string
+      result_words = process_text(content.decode("utf-8"), 'jkjjkjkj', stopWords, False)
+      print('4')
+    else:
+      pass
+      # Throw error
+
+  # if we don't have to read a file
+  else:
+    if text:
+      result_words = process_text(text, 'jkjjkjkj', stopWords, False)
+      print('2')
+    else:
+      pass
+      # Throw error
+
+  print('5')
+  # return result_words
+  return { "state": 'ongoing', "id": "jaivgktuyfgg" }
