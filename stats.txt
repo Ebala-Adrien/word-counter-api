@@ -1,3 +1,0 @@
-le programme met en moyenne 0.25 secondes à analyser une page pdf
-le programme met en moyenne 0.14 secondes create une nlp/language de spacy contenant
-  l'équivalent de 10 pages pdf
