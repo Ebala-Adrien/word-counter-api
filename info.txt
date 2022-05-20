@@ -1,0 +1,31 @@
+4 endpoints:
+
+# / (POST)
+- Info: Initial request where we send the file or text that has to be analyzed. A task is created
+- Response: { "id": string, "success": Boolean }
+
+# /polling/task-id (GET)
+- Info: Polling reequest to know the advancement of the task
+- Response: { "id": String, "finish": Boolean, "progression": Number, "success": Boolean }
+
+# /successful-polling/task-id (GET)
+- Info: Request to send when the task is over and it went successful. We retrieve the data and delete the task
+- Response: { "success": Boolean: "stats": {
+                score_language: "0.999934566", language: "fr", error: "False",
+                time: "2022-05-12 22:33:37.982932", progression: "100", 
+                counter: {
+                  number_of_chars: Number, number_of_words: Number,
+                  word_counter: [
+                    {'word': 'numéro', 'pos': 'NOUN', 'occurrence': 7}, 
+                    {'word': 'patrimonial', 'pos': 'ADJ', 'occurrence': 2}, 
+                    {'word': 'défaire', 'pos': 'VERB', 'occurrence': 1}
+                  ]
+                }
+            } }
+
+# /unsuccessful-polling/task-id (DELETE)
+- Info: Request to send when the task is over and it went wrong. We retrieve delete the task
+- Response: {"success": Boolean}
+
+
+The app require redis to be running in order to work properly

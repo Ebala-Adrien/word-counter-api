@@ -1,7 +1,7 @@
 import time, threading
-from datetime import datetime, timedelta
+from datetime import datetime
 
-# Same as js function
+# Same as javascrit setinterval
 class setInterval :
     def __init__(self, interval, action, optional_arg = None) :
         self.interval=interval
@@ -13,7 +13,6 @@ class setInterval :
 
     def __setInterval(self) :
         nextTime=time.time()+self.interval
-        # -100 comme j'aurais pu mettre n'importe quelle valeur négative
         while not self.stopEvent.wait(nextTime-time.time()) :
             nextTime+=self.interval
             self.action(self.optional_arg)  
@@ -21,9 +20,8 @@ class setInterval :
     def cancel(self) :
         self.stopEvent.set()
 
-#Splits the text if into several blocks if it is too large
-#max_size_blocks allow us to choose the size of each block
-#Optimisable
+
+# If the text is too large splits it into several blocks
 def split_large_text(text, max_size_blocks = 15000):
   t = text
   if len(t) > max_size_blocks:
@@ -43,8 +41,9 @@ def split_large_text(text, max_size_blocks = 15000):
 
   return t
 
-# Split the text into blocks
-# Join blocks of text in order to not analyze every block 1 by 1
+
+# Join blocks of text in order. 
+# So we don't analyze blocks 1 by 1 
 # But rather 10 by 10
 def create_blocks_to_analyze(text):
     blocks_to_parse = []
@@ -58,10 +57,9 @@ def create_blocks_to_analyze(text):
 
     return blocks_to_parse 
 
+
 available_languages = {
     "initials": ['en', 'fr', 'de', 'es'],
-    #In the future I should use bigger pipeline (not sm)
-    #Thus I could use alpha and oov attributes on the token
     "object": {
         "en": "en_core_web_sm",
         "fr": "fr_core_news_sm",
@@ -70,26 +68,6 @@ available_languages = {
     }
 }
 
-def read_redis_db(db):
-    keys = db.keys('*')
-    store = {}
-    
-    for key in keys:
-        val = None
-        type_key = db.type(key).decode('ascii')
-        if type_key == "string":
-            val = db.get(key)
-        if type_key == "hash":
-            val = db.hgetall(key)
-        if type_key == "zset":
-            val = db.zrange(key, 0, -1)
-        if type_key == "list":
-            val = db.lrange(key, 0, -1)
-        if type_key == "set":
-            val = db.smembers(key)
-        store[key.decode('ascii')] = val
-
-    print(store)
 
 def remove_old_tasks(db):
     keys = db.keys('*')
@@ -109,7 +87,13 @@ def remove_old_tasks(db):
                 db.delete(key)
 
 
+# https://universaldependencies.org/u/pos/
+word_pos = [
+        'ADJ', 'ADV', 'INTJ', 'NOUN', 'PROPN', 'VERB',
+        'ADP', 'AUX', 'CCONJ', 'DET', 'NUM', 'PART',
+        'PRON', 'SCONJ'
+      ]
 
-        
 
-    
+def sort_word_arr(word_dict):
+    return word_dict["occurrence"]
